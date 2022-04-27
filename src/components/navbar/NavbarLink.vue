@@ -1,6 +1,6 @@
 <template>
   <router-link :to="to" class="link" :class="{ active: isActive}">
-    <i class="icon" :class="icon"/>
+    <font-awesome-icon class="icon" :icon="icon" />
     <transition name="fade">
       <span v-if="!collapsed">
         <slot/>
@@ -17,7 +17,7 @@ import {collapsed} from "@/components/navbar/state";
 export default {
   props: {
     to: { type: String, required: true},
-    icon: { type: String, required: true}
+    icon: { type: Array, required: true}
   },
   setup(props) {
     const route = useRoute();

@@ -8,16 +8,16 @@
       <span v-else>Hol nézzem?</span>
     </h1>
 
-    <NavbarLink to="/" icon="fas fa-home">Kezdőlap</NavbarLink>
-    <NavbarLink to="/sportevents" icon="fas fa-event">Események</NavbarLink>
-    <NavbarLink to="/bars" icon="fas fa-bar">Helyszínek</NavbarLink>
+    <NavbarLink to="/" :icon="['fas', 'house']">Kezdőlap</NavbarLink>
+    <NavbarLink to="/sportevents" :icon="['fas', 'futbol']">Események</NavbarLink>
+    <NavbarLink to="/bars" :icon="['fas', 'beer']">Helyszínek</NavbarLink>
 
     <span
         class="collapse-icon"
         :class="{ 'rotate-180': collapsed }"
         @click="toggleSidebar"
     >
-      <p class="toggle">>></p>
+      <font-awesome-icon class="toggle" :icon="['fas', 'arrow-left-long']" />
     </span>
   </div>
 </template>
