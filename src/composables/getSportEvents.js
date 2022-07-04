@@ -11,20 +11,8 @@ const getSportEvents = (days = null) => {
                 url += 'incoming?days=' + days;
             }
 
-            let data = await fetch(url , {
-                method: 'GET',
-                mode: 'no-cors',
-                // headers: {
-                //     'Content-Type': 'application/json'
-                // }
-            });
-            console.log(data);
-            // let res = await JSON.stringify(data);
-            // console.log(res);
-            // if (!data.ok) {
-            //     throw Error('no data available');
-            // }
-            // sportEvents.value = await data.json();
+            let data = await fetch(url);
+            sportEvents.value = await data.json();
         } catch (err) {
             error.value = err.message;
             console.error(error.value);

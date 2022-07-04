@@ -5,7 +5,7 @@
   <div>
     <h2>Közelgő események</h2>
   </div>
-  <SportEventsTable/>
+    <SportEventsTable :days="3"/>
 </template>
 
 <script>

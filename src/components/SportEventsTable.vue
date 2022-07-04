@@ -1,29 +1,47 @@
 <template>
-  <div class="middle">
-    <b-table striped hover :items="items"></b-table>
+  <div>
+    <b-table class="mainTable" striped hover :items="formattedSportEvents" :fields="fields"></b-table>
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
 import getSportEvents from "@/composables/getSportEvents";
+import { computed } from "vue";
 
 export default {
-
-  setup() {
-    const items = ref(null);
-    const { load } = getSportEvents();
+  props: {
+    days: { type: Number, required: false},
+  },
+  setup(props) {
+    const fields = [
+      { key: 'logo', label: '', sortable: false},
+      { key: 'mainCategory', label: 'Kategória', sortable: true, sortDirection: 'asc'},
+      { key: 'matchName', label: 'Mérkőzés', sortable: false},
+      { key: 'country', label: 'Ország', sortable: true, sortDirection: 'asc'},
+      { key: 'eventDate', label: 'Dátum', sortable: true, sortDirection: 'desc'},
+      { key: 'link', label: '', sortable: false},
+    ];
+    const { load, sportEvents } = getSportEvents(props.days);
 
     load();
 
-    items.value = [
-      { logo: 'nb1', category: 'Labdarúgás', időpont: '2022-06-14 18:00', link: 'Bars'},
-      { logo: 'bl', category: 'Kézilabda', időpont: '2022-06-15 14:00', link: 'Bars'},
-      { logo: 'el', category: 'Darts', időpont: '2022-06-15 16:00', link: 'Bars'},
-      { logo: 'vb', category: 'Floorball', időpont: '2022-06-16 12:30', link: 'Bars'}
-    ];
+    const formattedSportEvents = computed(() => {
+      return sportEvents.value.map((sportEvent) => {
+        const event = { ... sportEvent };
+        event.matchName = event.homeTeamName + ' - ' + event.awayTeamName;
+        event.eventDate = event.eventDate.replace('T', ' ');
+        event.link = 'link here';
+        event.logo = getLogoForSportEvent(event.mainCategory);
+        return event;
+      });
+    });
 
-    return { items };
+    const getLogoForSportEvent = (mainCategory) => {
+      //find the logo for the main category () firestore?
+      //fallback if logo was not found!
+    }
+
+    return { formattedSportEvents, fields };
   }
 }
 </script>
