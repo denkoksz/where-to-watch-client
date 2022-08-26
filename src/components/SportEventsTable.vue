@@ -7,11 +7,11 @@
        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
        :globalFilterFields="['mainCategory', 'country', 'leagueName', 'matchName']" responsiveLayout="scroll">
       <template #header>
-        <div class="flex justify-content-center align-items-center">
-          <h5 class="m-0">Események</h5>
+        <div>
+          <h5 class="m-2">Események</h5>
             <span class="p-input-icon-left">
                 <i class="pi pi-search" />
-                <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
+                <InputText v-model="filters['global'].value" placeholder="Keresés az események között" style="width: 250px"/>
             </span>
         </div>
       </template>
