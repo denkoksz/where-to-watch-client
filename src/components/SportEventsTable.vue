@@ -1,19 +1,16 @@
 <template>
-  <div>
+  <div class="card">
     <!--    TODO: put the :paginator="true" attribute to the Datatable properties -->
     <DataTable :value="sportEvents" class="p-datatable-sportevents" :rows="10"
-      row-hover="true" v-model:filters="filters" filterDisplay="menu" :loading="loading"
+      row-hover v-model:filters="filters" filterDisplay="row" :loading="loading"
        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[10,25,50]"
        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
        :globalFilterFields="['mainCategory', 'country', 'leagueName', 'matchName']" responsiveLayout="scroll">
       <template #header>
-        <div>
-          <h5 class="m-2">Események</h5>
-            <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText v-model="filters['global'].value" placeholder="Keresés az események között" style="width: 250px"/>
-            </span>
-        </div>
+          <span class="p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText v-model="filters['global'].value" placeholder="Keresés az események között" style="width: 250px"/>
+          </span>
       </template>
       <template #empty>
         Nincs közelgő esemény.
@@ -21,35 +18,39 @@
       <template #loading>
         Közelgő események betöltése... Kérlek várj...
       </template>
-      <Column field="mainCategory" header="Kategoria" sortable style="min-width: 14rem">
+
+      <Column header="Sportág" filterField="mainCategory" :showFilterMenu="false" style="min-width:14rem">
         <template #body="{data}">
-          {{data.logo}}
+          <span class="image-text">{{data.mainCategory}}</span>
+        </template>
+        <template #filter="{filterModel,filterCallback}">
+          <MultiSelect v-model="filterModel.value" @change="filterCallback()" :options="categories" placeholder="Sportág" class="p-column-filter" display="chip">
+            <template #option="slotProps">
+              <div class="p-multiselect-representative-option">
+                <span class="image-text">{{slotProps.option}}</span>
+              </div>
+            </template>
+          </MultiSelect>
         </template>
       </Column>
-      <Column field="country" header="Ország" sortable style="min-width: 14rem">
+      <Column field="eventDate" header="Időpont" sortable style="min-width: 14rem">
         <template #body="{data}">
-          {{data.country}}
-        </template>
-        <template #filter="{filterModel}">
-          <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by country"/>
+          {{data.eventDate}}
         </template>
       </Column>
       <Column field="leagueName" header="Bajnokság" sortable style="min-width: 14rem">
         <template #body="{data}">
           {{data.leagueName}}
         </template>
-        <template #filter="{filterModel}">
-          <InputText type="text" v-model="filterModel.value" class="p-column-filter" placeholder="Search by league"/>
-        </template>
       </Column>
-      <Column field="matchName" header="Esemény" sortable style="min-width: 14rem">
+      <Column field="matchName" header="Esemény" style="min-width: 14rem">
         <template #body="{data}">
           {{data.matchName}}
         </template>
       </Column>
-      <Column field="eventDate" header="Időpont" sortable style="min-width: 14rem">
+      <Column field="country" header="Ország" sortable style="min-width: 14rem">
         <template #body="{data}">
-          {{data.eventDate}}
+          {{data.country}}
         </template>
       </Column>
       <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
@@ -79,38 +80,40 @@ export default {
     onMounted(async () => {
       sportEvents.value = sportEventsService.value.getSportEvents(props.days).then((se) => {
         sportEvents.value = formatSportEvent(se);
+        loading.value = false;
       });
     });
 
+    const loading = ref(true);
+
     const filters = ref({
-      global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+      'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+      'mainCategory': { value: null, matchMode: FilterMatchMode.IN }
     });
 
-    const getLogoForSportEvent = (mainCategory) => {
-      //find the logo for the main category () firestore?
-      //fallback if logo was not found!
-      return mainCategory;
-    }
     const formatSportEvent = (sportEvents) => {
       return sportEvents.map((sportEvent) => {
         const event = sportEvent;
         event.matchName = sportEvent.homeTeamName + ' - ' + sportEvent.awayTeamName;
         event.eventDate = sportEvent.eventDate.replace('T', ' ');
         event.link = getLinkForSportEvent(sportEvent);
-        event.logo = getLogoForSportEvent(sportEvent.mainCategory);
         return event;
       });
     };
 
+    const categories = ref([
+      'labdarúgás', 'darts', 'jégkorong'
+    ]);
+
     const goToSportEventPage = (link) => {
       window.open(link, '_blank');
-    }
+    };
 
     const getLinkForSportEvent = (sportEvent) => {
       return "https://www.google.com";
-    }
+    };
 
-    return { filters, sportEvents, handleClick: goToSportEventPage };
+    return { filters, sportEvents, handleClick: goToSportEventPage, categories, loading };
   }
 }
 </script>

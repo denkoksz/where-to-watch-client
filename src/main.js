@@ -14,6 +14,7 @@ import Column from "primevue/column";
 import InputText from "primevue/inputtext";
 import Paginator from "primevue/paginator";
 import Button from "primevue/button";
+import MultiSelect from "primevue/multiselect";
 
 
 library.add(fas);
@@ -28,4 +29,5 @@ createApp(App)
     .component("InputText", InputText)
     .component("Paginator", Paginator)
     .component("Button", Button)
+    .component("MultiSelect", MultiSelect)
     .mount("#app");
