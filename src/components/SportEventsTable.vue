@@ -9,7 +9,7 @@
       <template #header>
           <span class="p-input-icon-left">
               <i class="pi pi-search" />
-              <InputText v-model="filters['global'].value" placeholder="Keresés az események között" style="width: 250px"/>
+              <InputText v-model="filters['global'].value" placeholder="Keresés az összes esemény között" style="width: 285px"/>
           </span>
       </template>
       <template #empty>
@@ -24,7 +24,7 @@
           <span class="image-text">{{data.mainCategory}}</span>
         </template>
         <template #filter="{filterModel,filterCallback}">
-          <MultiSelect v-model="filterModel.value" @change="filterCallback()" :options="categories" placeholder="Sportág" class="p-column-filter" display="chip">
+          <MultiSelect v-model="filterModel.value" :show-toggle-all="false" @change="filterCallback()" :options="categories" placeholder="Sportág" class="p-column-filter" display="chip">
             <template #option="slotProps">
               <div class="p-multiselect-representative-option">
                 <span class="image-text">{{slotProps.option}}</span>
@@ -38,9 +38,18 @@
           {{data.eventDate}}
         </template>
       </Column>
-      <Column field="leagueName" header="Bajnokság" sortable style="min-width: 14rem">
+      <Column header="Bajnokság" filterField="leagueName" :showFilterMenu="false" sortable style="min-width: 14rem">
         <template #body="{data}">
-          {{data.leagueName}}
+          <span class="image-text">{{data.leagueName}}</span>
+        </template>
+        <template #filter="{filterModel,filterCallback}">
+          <MultiSelect v-model="filterModel.value" :show-toggle-all="false" @change="filterCallback()" :options="leagues" placeholder="Bajnokság" class="p-column-filter" display="chip">
+            <template #option="slotProps">
+              <div class="p-multiselect-representative-option">
+                <span class="image-text">{{slotProps.option}}</span>
+              </div>
+            </template>
+          </MultiSelect>
         </template>
       </Column>
       <Column field="matchName" header="Esemény" style="min-width: 14rem">
@@ -48,9 +57,18 @@
           {{data.matchName}}
         </template>
       </Column>
-      <Column field="country" header="Ország" sortable style="min-width: 14rem">
+      <Column filterField="country" header="Ország" :showFilterMenu="false" sortable style="min-width: 14rem">
         <template #body="{data}">
-          {{data.country}}
+          <span class="image-text">{{data.country}}</span>
+        </template>
+        <template #filter="{filterModel,filterCallback}">
+          <MultiSelect v-model="filterModel.value" :show-toggle-all="false" @change="filterCallback()" :options="countries" placeholder="Ország" class="p-column-filter" display="chip">
+            <template #option="slotProps">
+              <div class="p-multiselect-representative-option">
+                <span class="image-text">{{slotProps.option}}</span>
+              </div>
+            </template>
+          </MultiSelect>
         </template>
       </Column>
       <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
@@ -76,11 +94,17 @@ export default {
   setup(props) {
     const sportEventsService = ref(new SportEventsService());
     const sportEvents = ref();
+    const categories = ref([]);
+    const leagues = ref([]);
+    const countries = ref([]);
 
     onMounted(async () => {
       sportEvents.value = sportEventsService.value.getSportEvents(props.days).then((se) => {
         sportEvents.value = formatSportEvent(se);
         loading.value = false;
+        categories.value = getCategories(se);
+        leagues.value = getLeagues(se);
+        countries.value = getCountries(se);
       });
     });
 
@@ -88,12 +112,15 @@ export default {
 
     const filters = ref({
       'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
-      'mainCategory': { value: null, matchMode: FilterMatchMode.IN }
+      'mainCategory': { value: null, matchMode: FilterMatchMode.IN },
+      'leagueName': { value: null, matchMode: FilterMatchMode.IN },
+      'country': { value: null, matchMode: FilterMatchMode.IN }
     });
 
     const formatSportEvent = (sportEvents) => {
       return sportEvents.map((sportEvent) => {
         const event = sportEvent;
+        event.mainCategory = capitalizeFirstLetter(sportEvent.mainCategory);
         event.matchName = sportEvent.homeTeamName + ' - ' + sportEvent.awayTeamName;
         event.eventDate = sportEvent.eventDate.replace('T', ' ');
         event.link = getLinkForSportEvent(sportEvent);
@@ -101,9 +128,35 @@ export default {
       });
     };
 
-    const categories = ref([
-      'labdarúgás', 'darts', 'jégkorong'
-    ]);
+    const getCategories = (sportEvents) => {
+      let categories = new Set();
+
+      sportEvents.map((sportEvent) => {
+        categories.add(sportEvent.mainCategory);
+      });
+
+      return categories;
+    }
+
+    const getLeagues = (sportEvents) => {
+      let leagues = new Set();
+
+      sportEvents.map((sportEvent) => {
+        leagues.add(sportEvent.leagueName);
+      });
+
+      return leagues;
+    }
+
+    const getCountries = (sportEvents) => {
+      let countries = new Set();
+
+      sportEvents.map((sportEvent) => {
+        countries.add(sportEvent.country);
+      });
+
+      return countries;
+    }
 
     const goToSportEventPage = (link) => {
       window.open(link, '_blank');
@@ -113,7 +166,11 @@ export default {
       return "https://www.google.com";
     };
 
-    return { filters, sportEvents, handleClick: goToSportEventPage, categories, loading };
+    const capitalizeFirstLetter = (string) => {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    return { filters, sportEvents, handleClick: goToSportEventPage, categories, leagues, countries, loading };
   }
 }
 </script>
