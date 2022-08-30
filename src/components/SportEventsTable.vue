@@ -97,6 +97,13 @@ export default {
     const categories = ref([]);
     const leagues = ref([]);
     const countries = ref([]);
+    const loading = ref(true);
+    const filters = ref({
+      'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+      'mainCategory': { value: null, matchMode: FilterMatchMode.IN },
+      'leagueName': { value: null, matchMode: FilterMatchMode.IN },
+      'country': { value: null, matchMode: FilterMatchMode.IN }
+    });
 
     onMounted(async () => {
       sportEvents.value = sportEventsService.value.getSportEvents(props.days).then((se) => {
@@ -106,15 +113,6 @@ export default {
         leagues.value = getLeagues(se);
         countries.value = getCountries(se);
       });
-    });
-
-    const loading = ref(true);
-
-    const filters = ref({
-      'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
-      'mainCategory': { value: null, matchMode: FilterMatchMode.IN },
-      'leagueName': { value: null, matchMode: FilterMatchMode.IN },
-      'country': { value: null, matchMode: FilterMatchMode.IN }
     });
 
     const formatSportEvent = (sportEvents) => {
