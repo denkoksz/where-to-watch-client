@@ -1,35 +1,79 @@
 <template>
-  <div>
-    <b-table class="mainTable" striped hover :items="formattedBars" :fields="fields"></b-table>
+  <div class="card">
+    <DataTable :value="bars" class="p-datatable-bars" :rows="10"
+               row-hover v-model:filters="filters" filterDisplay="row" :loading="loading"
+               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[10,25,50]"
+               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+               :globalFilterFields="['name', 'address', 'payments']" responsiveLayout="scroll">
+      <template #header>
+          <span class="p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText v-model="filters['global'].value" placeholder="Keresés az összes helyszín között" style="width: 285px"/>
+          </span>
+      </template>
+      <template #empty>
+        Nincs megjeleníthető helyszín.
+      </template>
+      <template #loading>
+        Helszínek betöltése... Kérlek várj...
+      </template>
+      <Column field="name" header="Helyszín" sortable style="min-width: 14rem">
+        <template #body="{data}">
+          {{data.name}}
+        </template>
+      </Column>
+      <Column field="address" header="Cím" sortable style="min-width: 14rem">
+        <template #body="{data}">
+          {{data.address}}
+        </template>
+      </Column>
+      <Column field="payments" header="Fizetési lehetőségek" sortable style="min-width: 14rem">
+        <template #body="{data}">
+          {{data.payments}}
+        </template>
+      </Column>
+      <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
+        <template #body="{data}">
+          <Button icon="fas" class="p-button-link" @click="handleClick(data.link)">
+            <font-awesome-icon :icon="['fas', 'square-arrow-up-right']" />
+          </Button>
+        </template>
+      </Column>
+
+    </DataTable>
   </div>
 </template>
 
 <script>
-import { computed } from "vue";
-import getEventBars from "@/composables/getEventBars";
+import { onMounted, ref } from "vue";
+import BarsService from "@/composables/BarsService";
+import { FilterMatchMode } from "primevue/api";
 
 export default {
   setup() {
-    const fields = [
-      { key: 'name', label: 'Hely neve', sortable: true},
-      { key: 'address', label: 'Cím', sortable: false},
-      { key: 'payments', label: 'Fizetési lehetőségek', sortable: false},
-      { key: 'link', label: '', sortable: false}
-    ];
-    const { load, eventBars } = getEventBars();
+    const barsService = ref(new BarsService());
+    const bars = ref();
+    const loading = ref(true);
+    const filters = ref({
+      'global': { value: null, matchMode: FilterMatchMode.CONTAINS }
+    });
 
-    load();
-
-    const formattedBars = computed(() => {
-      return eventBars.value.map((bar) => {
-        const singleBar = { ... eventBars };
-        singleBar.name = bar.name;
-        singleBar.address = bar.zipCode + ', ' + bar.city + ', ' + bar.street + ' ' + bar.houseNumber;
-        singleBar.payments = getPayments(bar.creditCard, bar.szepCard);
-        singleBar.link = 'link here';
-        return singleBar;
+    onMounted(() => {
+      bars.value = barsService.value.getBars().then((bar) => {
+        bars.value = formatBar(bar);
+        loading.value = false;
       });
     });
+
+    const formatBar = (bars) => {
+      return bars.map((bar) => {
+        const formattedBar = bar;
+        formattedBar.address = bar.zipCode + ', ' + bar.city + ', ' + bar.street + ' ' + bar.houseNumber;
+        formattedBar.payments = getPayments(bar.creditCard, bar.szepCard);
+        formattedBar.link = getLinkForBar(bar);
+        return formattedBar;
+      });
+    };
 
     const getPayments = (creditCard, szepCard) => {
       let paymentOptions = 'készpénz';
@@ -42,11 +86,71 @@ export default {
       return paymentOptions;
     }
 
-    return { formattedBars, fields };
+    const getLinkForBar = (bar) => {
+      return "https://www.google.com";
+    };
+
+    const goToSportEventPage = (link) => {
+      window.open(link, '_blank');
+    };
+
+    return { bars, filters, handleClick: goToSportEventPage };
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "~primevue/resources/themes/saga-blue/theme.css";
+@import "~primevue/resources/primevue.min.css";
+@import "~primeicons/primeicons.css";
 
+img {
+  vertical-align: middle;
+}
+::v-deep(.p-paginator) {
+  .p-paginator-current {
+    margin-left: auto;
+  }
+}
+
+::v-deep(.p-progressbar) {
+  height: .5rem;
+  background-color: #D8DADC;
+
+  .p-progressbar-value {
+    background-color: #607D8B;
+  }
+}
+
+::v-deep(.p-datepicker) {
+  min-width: 25rem;
+
+  td {
+    font-weight: 400;
+  }
+}
+
+::v-deep(.p-datatable.p-datatable-bars) {
+  .p-datatable-header {
+    padding: 1rem;
+    text-align: left;
+    font-size: 1.5rem;
+  }
+
+  .p-paginator {
+    padding: 1rem;
+  }
+
+  .p-datatable-thead > tr > th {
+    text-align: left;
+  }
+
+  .p-datatable-tbody > tr > td {
+    cursor: auto;
+  }
+
+  .p-dropdown-label:not(.p-placeholder) {
+    text-transform: uppercase;
+  }
+}
 </style>
