@@ -1,9 +1,20 @@
 export default class BarsService {
 
-    async getBars () {
+    URL = 'http://localhost:5000/api/bars/';
+
+    async getBars() {
         try {
-            const url = 'http://localhost:5000/api/bars/';
-            let data = await fetch(url);
+            let data = await fetch(this.URL);
+            return await data.json();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async getBarById(id) {
+        try {
+            let singleBarUrl = this.URL + id;
+            let data = await fetch(singleBarUrl);
             return await data.json();
         } catch (err) {
             console.error(err);

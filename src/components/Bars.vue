@@ -34,9 +34,11 @@
       </Column>
       <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
         <template #body="{data}">
-          <Button icon="fas" class="p-button-link" @click="handleClick(data.link)">
-            <font-awesome-icon :icon="['fas', 'square-arrow-up-right']" />
-          </Button>
+          <router-link :to="{ name: 'barDetails', params: { id: data.pkBar }}">
+            <Button icon="fas" class="p-button-link">
+              <font-awesome-icon :icon="['fas', 'square-arrow-up-right']" />
+            </Button>
+          </router-link>
         </template>
       </Column>
 

@@ -106,7 +106,7 @@ export default {
     });
 
     onMounted(async () => {
-      sportEvents.value = sportEventsService.value.getSportEvents(props.days).then((se) => {
+      sportEventsService.value.getSportEvents(props.days).then((se) => {
         sportEvents.value = formatSportEvent(se);
         loading.value = false;
         categories.value = getCategories(se);
