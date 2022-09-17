@@ -60,37 +60,12 @@ export default {
       'global': { value: null, matchMode: FilterMatchMode.CONTAINS }
     });
 
-    onMounted(() => {
-      bars.value = barsService.value.getBars().then((bar) => {
-        bars.value = formatBar(bar);
+    onMounted(async () => {
+      await barsService.value.getBars().then((bar) => {
+        bars.value = barsService.value.formatMultipleBars(bar);
         loading.value = false;
       });
     });
-
-    const formatBar = (bars) => {
-      return bars.map((bar) => {
-        const formattedBar = bar;
-        formattedBar.address = bar.zipCode + ', ' + bar.city + ', ' + bar.street + ' ' + bar.houseNumber;
-        formattedBar.payments = getPayments(bar.creditCard, bar.szepCard);
-        formattedBar.link = getLinkForBar(bar);
-        return formattedBar;
-      });
-    };
-
-    const getPayments = (creditCard, szepCard) => {
-      let paymentOptions = 'készpénz';
-      if (creditCard === 1) {
-        paymentOptions += ', bankkártya';
-      }
-      if (szepCard === 1) {
-        paymentOptions += ', SZÉP kártya';
-      }
-      return paymentOptions;
-    }
-
-    const getLinkForBar = (bar) => {
-      return "https://www.google.com";
-    };
 
     const goToSportEventPage = (link) => {
       window.open(link, '_blank');

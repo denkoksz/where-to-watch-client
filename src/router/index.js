@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Welcome from "@/views/Welcome";
 import SportEvents from "@/views/SportEvents";
 import Bars from "@/views/Bars";
-import BarDetails from "@/components/BarDetails";
+import BarDetails from "@/views/BarDetails";
 
 
 const routes = [

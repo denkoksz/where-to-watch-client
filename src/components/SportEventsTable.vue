@@ -90,6 +90,7 @@ import { FilterMatchMode } from "primevue/api";
 export default {
   props: {
     days: { type: Number, required: false},
+    barId: { type: Number, required: false}
   },
   setup(props) {
     const sportEventsService = ref(new SportEventsService());
@@ -106,7 +107,7 @@ export default {
     });
 
     onMounted(async () => {
-      sportEventsService.value.getSportEvents(props.days).then((se) => {
+      sportEventsService.value.getSportEvents(props).then((se) => {
         sportEvents.value = formatSportEvent(se);
         loading.value = false;
         categories.value = getCategories(se);

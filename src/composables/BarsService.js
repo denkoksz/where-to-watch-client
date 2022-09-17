@@ -20,4 +20,33 @@ export default class BarsService {
             console.error(err);
         }
     }
+
+    formatMultipleBars(bars) {
+        return bars.map((bar) => {
+            return this.formatBar(bar);
+        });
+    }
+
+    formatBar(bar) {
+        const formattedBar = bar;
+        formattedBar.address = bar.zipCode + ', ' + bar.city + ', ' + bar.street + ' ' + bar.houseNumber;
+        formattedBar.payments = this.getPayments(bar.creditCard, bar.szepCard);
+        formattedBar.link = this.getLinkForBar(bar);
+        return formattedBar;
+    }
+
+    getPayments = (creditCard, szepCard) => {
+        let paymentOptions = 'készpénz';
+        if (creditCard === 1) {
+            paymentOptions += ', bankkártya';
+        }
+        if (szepCard === 1) {
+            paymentOptions += ', SZÉP kártya';
+        }
+        return paymentOptions;
+    }
+
+    getLinkForBar = (bar) => {
+        return "https://www.google.com";
+    };
 }
