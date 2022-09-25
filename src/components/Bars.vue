@@ -1,4 +1,7 @@
 <template>
+  <div v-if="sportEventId">
+    <p>Kiválasztott esemény: {{ sportEvent }}</p>
+  </div>
   <div class="card">
     <DataTable :value="bars" class="p-datatable-bars" :rows="10"
                row-hover v-model:filters="filters" filterDisplay="row" :loading="loading"
@@ -50,28 +53,54 @@
 import { onMounted, ref } from "vue";
 import BarsService from "@/composables/BarsService";
 import { FilterMatchMode } from "primevue/api";
+import SportEventsService from "@/composables/SportEventsService";
 
 export default {
-  setup() {
+  props: {
+    sportEventId: { type: Number, required: false}
+  },
+  setup(props) {
     const barsService = ref(new BarsService());
+    const sportEventsService = ref(new SportEventsService());
     const bars = ref();
+    const sportEvent = ref();
     const loading = ref(true);
     const filters = ref({
       'global': { value: null, matchMode: FilterMatchMode.CONTAINS }
     });
 
     onMounted(async () => {
-      await barsService.value.getBars().then((bar) => {
+      await barsService.value.getBars(props.sportEventId).then((bar) => {
         bars.value = barsService.value.formatMultipleBars(bar);
         loading.value = false;
       });
+      await sportEventsService.value.getSportEventById(props.sportEventId).then((se) => {
+        sportEvent.value = formatSportEvent(se);
+      });
     });
+
+    const formatSportEvent = (sportEvent) => {
+        const event = sportEvent;
+        event.mainCategory = capitalizeFirstLetter(sportEvent.mainCategory);
+        event.matchName = sportEvent.homeTeamName + ' - ' + sportEvent.awayTeamName;
+        event.eventDate = sportEvent.eventDate.replace('T', ' ');
+        event.link = getLinkForSportEvent(event.pkEvent);
+        return event;
+    };
+
+    const getLinkForSportEvent = (id) => {
+      return "/sportevents/" + id;
+    };
+
+    const capitalizeFirstLetter = (string) => {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
     const goToSportEventPage = (link) => {
       window.open(link, '_blank');
     };
 
-    return { bars, filters, handleClick: goToSportEventPage };
+    return { bars, sportEvent, filters, handleClick: goToSportEventPage };
   }
 }
 </script>

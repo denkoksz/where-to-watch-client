@@ -122,7 +122,7 @@ export default {
         event.mainCategory = capitalizeFirstLetter(sportEvent.mainCategory);
         event.matchName = sportEvent.homeTeamName + ' - ' + sportEvent.awayTeamName;
         event.eventDate = sportEvent.eventDate.replace('T', ' ');
-        event.link = getLinkForSportEvent(sportEvent);
+        event.link = getLinkForSportEvent(event.pkEvent);
         return event;
       });
     };
@@ -161,8 +161,8 @@ export default {
       window.open(link, '_blank');
     };
 
-    const getLinkForSportEvent = (sportEvent) => {
-      return "https://www.google.com";
+    const getLinkForSportEvent = (id) => {
+      return "/sportevents/" + id;
     };
 
     const capitalizeFirstLetter = (string) => {

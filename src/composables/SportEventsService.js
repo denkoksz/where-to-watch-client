@@ -17,4 +17,14 @@ export default class SportEventsService {
             console.error(err);
         }
     }
+
+    async getSportEventById(sportEventId) {
+        try {
+            let url = 'http://localhost:5000/api/sportevents/' + sportEventId;
+            let data = await fetch(url);
+            return await data.json();
+        } catch (err) {
+            console.error(err);
+        }
+    }
 }

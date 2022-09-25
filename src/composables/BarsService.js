@@ -2,9 +2,14 @@ export default class BarsService {
 
     URL = 'http://localhost:5000/api/bars/';
 
-    async getBars() {
+    async getBars(sportEventId) {
         try {
-            let data = await fetch(this.URL);
+            let url = this.URL;
+            if (sportEventId !== undefined) {
+                url = 'http://localhost:5000/api/sportevents/' + sportEventId + '/bars';
+            }
+            console.log(url)
+            let data = await fetch(url);
             return await data.json();
         } catch (err) {
             console.error(err);

@@ -26,6 +26,12 @@ const routes = [
     name: 'barDetails',
     component: BarDetails,
     props: castRouteParams
+  },
+  {
+    path: '/sportevents/:sportEventId',
+    name: 'sportEventBars',
+    component: Bars,
+    props: castRouteParams
   }
 ]
 
