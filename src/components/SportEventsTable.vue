@@ -108,24 +108,13 @@ export default {
 
     onMounted(async () => {
       sportEventsService.value.getSportEvents(props).then((se) => {
-        sportEvents.value = formatSportEvent(se);
+        sportEvents.value = sportEventsService.value.formatMultipleSportEvent(se);
         loading.value = false;
         categories.value = getCategories(se);
         leagues.value = getLeagues(se);
         countries.value = getCountries(se);
       });
     });
-
-    const formatSportEvent = (sportEvents) => {
-      return sportEvents.map((sportEvent) => {
-        const event = sportEvent;
-        event.mainCategory = capitalizeFirstLetter(sportEvent.mainCategory);
-        event.matchName = sportEvent.homeTeamName + ' - ' + sportEvent.awayTeamName;
-        event.eventDate = sportEvent.eventDate.replace('T', ' ');
-        event.link = getLinkForSportEvent(event.pkEvent);
-        return event;
-      });
-    };
 
     const getCategories = (sportEvents) => {
       let categories = new Set();
@@ -160,14 +149,6 @@ export default {
     const goToSportEventPage = (link) => {
       window.open(link, '_blank');
     };
-
-    const getLinkForSportEvent = (id) => {
-      return "/sportevents/" + id;
-    };
-
-    const capitalizeFirstLetter = (string) => {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
 
     return { filters, sportEvents, handleClick: goToSportEventPage, categories, leagues, countries, loading };
   }

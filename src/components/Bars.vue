@@ -75,32 +75,11 @@ export default {
         loading.value = false;
       });
       await sportEventsService.value.getSportEventById(props.sportEventId).then((se) => {
-        sportEvent.value = formatSportEvent(se);
+        sportEvent.value = sportEventsService.value.formatSportEvent(se);
       });
     });
 
-    const formatSportEvent = (sportEvent) => {
-        const event = sportEvent;
-        event.mainCategory = capitalizeFirstLetter(sportEvent.mainCategory);
-        event.matchName = sportEvent.homeTeamName + ' - ' + sportEvent.awayTeamName;
-        event.eventDate = sportEvent.eventDate.replace('T', ' ');
-        event.link = getLinkForSportEvent(event.pkEvent);
-        return event;
-    };
-
-    const getLinkForSportEvent = (id) => {
-      return "/sportevents/" + id;
-    };
-
-    const capitalizeFirstLetter = (string) => {
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-
-    const goToSportEventPage = (link) => {
-      window.open(link, '_blank');
-    };
-
-    return { bars, sportEvent, filters, handleClick: goToSportEventPage };
+    return { bars, sportEvent, filters };
   }
 }
 </script>

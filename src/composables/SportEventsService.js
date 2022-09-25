@@ -27,4 +27,32 @@ export default class SportEventsService {
             console.error(err);
         }
     }
+
+    formatSingleSportEvent = (sportEvent) => {
+        return this.extendSportEvent(sportEvent);
+    };
+
+    formatMultipleSportEvent = (sportEvents) => {
+        return sportEvents.map((sportEvent) => {
+            return this.extendSportEvent(sportEvent);
+        });
+    };
+
+    extendSportEvent(sportEvent) {
+        const event = sportEvent;
+        event.mainCategory = this.capitalizeFirstLetter(sportEvent.mainCategory);
+        event.matchName = sportEvent.homeTeamName + ' - ' + sportEvent.awayTeamName;
+        event.eventDate = sportEvent.eventDate.replace('T', ' ');
+        event.link = this.getLinkForSportEvent(event.pkEvent);
+        return event;
+    }
+
+    getLinkForSportEvent = (id) => {
+        return "/sportevents/" + id;
+    };
+
+    capitalizeFirstLetter = (string) => {
+        console.log(string)
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 }
