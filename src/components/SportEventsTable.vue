@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <!--    TODO: put the :paginator="true" attribute to the Datatable properties -->
-    <DataTable :value="sportEvents" class="p-datatable-sportevents" :rows="10"
+    <DataTable :value="sportEvents" class="p-datatable-sportevents" :rows="10" :paginator="true"
       row-hover v-model:filters="filters" filterDisplay="row" :loading="loading"
        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[10,25,50]"
        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
