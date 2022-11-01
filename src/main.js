@@ -15,6 +15,8 @@ import InputText from "primevue/inputtext";
 import Paginator from "primevue/paginator";
 import Button from "primevue/button";
 import MultiSelect from "primevue/multiselect";
+import Dropdown from "primevue/dropdown";
+import Calendar from "primevue/calendar";
 
 
 library.add(fas);
@@ -30,4 +32,6 @@ createApp(App)
     .component("Paginator", Paginator)
     .component("Button", Button)
     .component("MultiSelect", MultiSelect)
+    .component("Dropdown", Dropdown)
+    .component("Calendar", Calendar)
     .mount("#app");

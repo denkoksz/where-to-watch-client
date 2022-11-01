@@ -1,9 +1,16 @@
 <template>
-  <div v-if="sportEventId">
-    <p>Kiválasztott esemény: {{ sportEvent }}</p>
-  </div>
+    <div class="mt-4" v-if="sportEvent">
+        <b-card img-src="https://placekitten.com/250/250" img-alt="Card image" img-left class="mb-3">
+          <h2>Kiválasztott esemény</h2>
+          <p>Kategória: {{ sportEvent.mainCategory }}</p>
+          <p>Ország: {{ sportEvent.country }}</p>
+          <p>Bajnokság: {{ sportEvent.leagueName }}</p>
+          <p>Mérkőzés: {{ sportEvent.matchName }}</p>
+          <p>Időpont: {{ sportEvent.eventDate }} </p>
+        </b-card>
+    </div>
   <div class="card">
-    <DataTable :value="bars" class="p-datatable-bars" :rows="10"
+    <DataTable :value="bars" class="p-datatable-bars" :rows="10" :paginator="true"
                row-hover v-model:filters="filters" filterDisplay="row" :loading="loading"
                paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rowsPerPageOptions="[10,25,50]"
                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -57,7 +64,7 @@ import SportEventsService from "@/composables/SportEventsService";
 
 export default {
   props: {
-    sportEventId: { type: Number, required: false}
+    sportEventId: { type: Number, required: false }
   },
   setup(props) {
     const barsService = ref(new BarsService());
@@ -74,9 +81,12 @@ export default {
         bars.value = barsService.value.formatMultipleBars(bar);
         loading.value = false;
       });
-      await sportEventsService.value.getSportEventById(props.sportEventId).then((se) => {
-        sportEvent.value = sportEventsService.value.formatSportEvent(se);
-      });
+
+      if(props.sportEventId) {
+        await sportEventsService.value.getSportEventById(props.sportEventId).then((se) => {
+          sportEvent.value = sportEventsService.value.formatSingleSportEvent(se);
+        });
+      }
     });
 
     return { bars, sportEvent, filters };

@@ -3,6 +3,7 @@ import Welcome from "@/views/Welcome";
 import SportEvents from "@/views/SportEvents";
 import Bars from "@/views/Bars";
 import BarDetails from "@/views/BarDetails";
+import CreateSportEvent from "@/views/CreateSportEvent";
 
 
 const routes = [
@@ -15,6 +16,11 @@ const routes = [
     path: '/sportevents',
     name: 'sportevents',
     component: SportEvents
+  },
+  {
+    path: '/createsportevent',
+    name: 'createsportevent',
+    component: CreateSportEvent
   },
   {
     path: '/bars',

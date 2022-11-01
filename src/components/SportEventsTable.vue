@@ -147,7 +147,7 @@ export default {
     }
 
     const goToSportEventPage = (link) => {
-      window.open(link, '_blank');
+      window.open(link);
     };
 
     return { filters, sportEvents, handleClick: goToSportEventPage, categories, leagues, countries, loading };
