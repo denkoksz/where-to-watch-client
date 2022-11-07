@@ -72,6 +72,20 @@ export default class SportEventsService {
         }
     }
 
+    async getTeams() {
+        try {
+            let url = 'http://localhost:5000/api/team/';
+            let data = await (await fetch(url)).json();
+            let teams = [];
+            data.map(rows => {
+                teams.push({name: rows.teamName});
+            });
+            return teams;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     async getCountriesByCategory(category) {
         try {
             let url = 'http://localhost:5000/api/country/filter?category=' + category;
@@ -80,7 +94,6 @@ export default class SportEventsService {
             data.map(rows => {
                 countries.push({name: rows.countryName});
             });
-            console.log(countries)
             return countries;
         } catch (err) {
             console.error(err);
@@ -96,6 +109,20 @@ export default class SportEventsService {
                 leagues.push({name: rows.leagueName});
             });
             return leagues;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async getTeamsByCategoryAndCountryAndLeague(category, country, league) {
+        try {
+            let url = 'http://localhost:5000/api/team/filter?category=' + category + '&country=' + country + '&league=' + league;
+            let data = await (await fetch(url)).json();
+            let teams = [];
+            data.map(rows => {
+                teams.push({name: rows.teamName});
+            });
+            return teams;
         } catch (err) {
             console.error(err);
         }

@@ -7,7 +7,7 @@
     <!--TODO: dropdown list ugy mukodjon, hogy szukitse a talalatokat ahhoz kepest, ami ki lett valasztva-->
       <div>
         <h5>Sportág</h5>
-        <Dropdown v-model="sportCategory" :options="sportCategories" optionLabel="name" :filter="true" placeholder="Válassz sportágat" :showClear="true">
+        <Dropdown v-model="sportCategory" :options="sportCategories" optionLabel="name" @change="onChangeCategory" :filter="true" placeholder="Válassz sportágat" :showClear="true">
           <template #value="slotProps">
             <div v-if="slotProps.value">
               <div>{{slotProps.value.name}}</div>
@@ -24,7 +24,7 @@
         </Dropdown>
 
         <h5>Ország</h5>
-        <Dropdown v-model="country" :options="countries" optionLabel="name" :filter="true" placeholder="Válassz országot" :showClear="true" id="country">
+        <Dropdown v-model="country" :options="countries" optionLabel="name"  @change="onChangeCountry" :filter="true" placeholder="Válassz országot" :showClear="true" id="country">
           <template #value="slotProps">
             <div v-if="slotProps.value">
               <div>{{slotProps.value.name}}</div>
@@ -41,7 +41,7 @@
         </Dropdown>
 
         <h5>Bajnokság</h5>
-        <Dropdown v-model="league" :options="leagues" optionLabel="name" :filter="true" placeholder="Válassz ligát" :showClear="true">
+        <Dropdown v-model="league" :options="leagues" optionLabel="name" @change="onChangeLeague" :filter="true" placeholder="Válassz ligát" :showClear="true">
           <template #value="slotProps">
             <div v-if="slotProps.value">
               <div>{{slotProps.value.name}}</div>
@@ -120,6 +120,7 @@ export default {
     const leagues = ref();
     const homeTeam = ref();
     const awayTeam = ref();
+    const teams = ref();
     const matchTime = ref();
     const alreadyCreated = ref(false);
     const sportEventsService = ref(new SportEventsService());
@@ -128,16 +129,8 @@ export default {
       sportCategories.value = await sportEventsService.value.getCategoryNames();
       countries.value = await sportEventsService.value.getCountries();
       leagues.value = await sportEventsService.value.getLeagues();
+      teams.value = await sportEventsService.value.getTeams();
     });
-
-    const teams = ref([
-      {name: 'Ferencváros', code: 'NB1'},
-      {name: 'Újpest', code: 'NB1'},
-      {name: 'Chelsea', code: 'PL'},
-      {name: 'Manchester United', code: 'PL'},
-      {name: 'Barcelona', code: 'LL'},
-      {name: 'Real Madrid', code: 'LL'}
-    ]);
 
     const createSportEvent = () => {
       try {
@@ -150,14 +143,41 @@ export default {
             matchTime.value
         );
       } catch (err) {
+        //TODO: throw error and display it if event was already created
         console.log('here: ' + err)
       }
 
     };
 
+    async function onChangeCategory() {
+      if (sportCategory.value) {
+        countries.value = await sportEventsService.value.getCountriesByCategory(sportCategory.value.name);
+      } else {
+        sportCategories.value = await sportEventsService.value.getCategoryNames();
+      }
+    }
+
+    async function onChangeCountry() {
+      if (country.value) {
+        leagues.value = await sportEventsService.value.getLeaguesByCategoryAndCountry(sportCategory.value.name, country.value.name);
+      } else {
+        countries.value = await sportEventsService.value.getCountries();
+      }
+    }
+
+    async function onChangeLeague() {
+      if (league.value) {
+        teams.value = await sportEventsService.value.getTeamsByCategoryAndCountryAndLeague(sportCategory.value.name, country.value.name, league.value.name);
+      } else {
+        leagues.value = await sportEventsService.value.getLeagues();
+        teams.value = await sportEventsService.value.getTeams();
+      }
+    }
+
     return {
       sportCategory, sportCategories, country, countries, league, leagues,
-      homeTeam, awayTeam, teams, matchTime, createSportEvent, alreadyCreated
+      homeTeam, awayTeam, teams, matchTime, createSportEvent, alreadyCreated,
+      onChangeCategory, onChangeCountry, onChangeLeague
     }
   }
 }
