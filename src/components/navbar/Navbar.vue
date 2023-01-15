@@ -11,6 +11,8 @@
     <NavbarLink to="/" :icon="['fas', 'house']">Kezdőlap</NavbarLink>
     <NavbarLink to="/sportevents" :icon="['fas', 'futbol']">Események</NavbarLink>
     <NavbarLink to="/bars" :icon="['fas', 'beer']">Helyszínek</NavbarLink>
+    <br>
+    <NavbarLink to="/createsportevent" :icon="['fas', 'pencil']">Esemény létrehozása</NavbarLink>
 
     <span
         class="collapse-icon"
