@@ -109,6 +109,7 @@
 <script>
 import {onMounted, onUpdated, ref} from 'vue';
 import SportEventsService from "@/composables/SportEventsService";
+import {useRouter} from "vue-router";
 
 export default {
   setup() {
@@ -124,6 +125,7 @@ export default {
     const matchTime = ref();
     const alreadyCreated = ref(false);
     const sportEventsService = ref(new SportEventsService());
+    const router = useRouter();
 
     onMounted(async () => {
       sportCategories.value = await sportEventsService.value.getCategoryNames();
@@ -142,11 +144,11 @@ export default {
             awayTeam.value.name,
             matchTime.value
         );
+        router.push({ name: 'welcome' });
       } catch (err) {
         //TODO: throw error and display it if event was already created
         console.log('here: ' + err)
       }
-
     };
 
     async function onChangeCategory() {
