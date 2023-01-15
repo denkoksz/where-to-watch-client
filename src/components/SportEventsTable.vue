@@ -83,7 +83,7 @@
       </Column>
       <Column headerStyle="width: 4rem; text-align: center" bodyStyle="text-align: center; overflow: visible">
         <template #body="{data}">
-          <Button icon="fas" class="p-button-link" @click="handleClick(data.link)">
+          <Button icon="fas" class="p-button-link" @click="handleClick(data.pkEvent)">
             <font-awesome-icon :icon="['fas', 'square-arrow-up-right']" />
           </Button>
         </template>
@@ -96,6 +96,7 @@
 import SportEventsService from '@/composables/SportEventsService';
 import { onMounted, ref } from "vue";
 import { FilterMatchMode } from "primevue/api";
+import {useRouter} from "vue-router";
 
 export default {
   props: {
@@ -103,6 +104,7 @@ export default {
     barId: { type: Number, required: false}
   },
   setup(props) {
+    const router = useRouter();
     const sportEventsService = ref(new SportEventsService());
     const sportEvents = ref();
     const originalSportEvents = ref();
@@ -159,8 +161,8 @@ export default {
       return countries;
     }
 
-    const goToSportEventPage = (link) => {
-      window.open(link);
+    const goToSportEventPage = (eventId) => {
+      router.push('/sportevents/' + eventId);
     };
 
     const loadAllSportEvents = () => {
