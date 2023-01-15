@@ -33,9 +33,19 @@
           </MultiSelect>
         </template>
       </Column>
-      <Column field="eventDate" header="Időpont" sortable style="min-width: 14rem">
+      <Column field="eventDate" header="Időpont" filterField="eventDate" :showFilterMenu="false" sortable style="min-width: 14rem">
         <template #body="{data}">
           {{data.eventDate}}
+        </template>
+        <template #filter="{filterModel,filterCallback}">
+          <Calendar selectionMode="range"
+                    :manualInput="false"
+                    v-model="dateRange"
+                    dateFormat="yy.mm.dd"
+                    :showButtonBar="true"
+                    placeholder="Időpont"
+                    @date-select="filterDateRange"
+                    @clear-click="loadAllSportEvents"/>
         </template>
       </Column>
       <Column header="Bajnokság" filterField="leagueName" :showFilterMenu="false" sortable style="min-width: 14rem">
@@ -95,6 +105,8 @@ export default {
   setup(props) {
     const sportEventsService = ref(new SportEventsService());
     const sportEvents = ref();
+    const originalSportEvents = ref();
+    const dateRange = ref();
     const categories = ref([]);
     const leagues = ref([]);
     const countries = ref([]);
@@ -109,6 +121,7 @@ export default {
     onMounted(async () => {
       sportEventsService.value.getSportEvents(props).then((se) => {
         sportEvents.value = sportEventsService.value.formatMultipleSportEvent(se);
+        originalSportEvents.value = sportEvents.value;
         loading.value = false;
         categories.value = getCategories(se);
         leagues.value = getLeagues(se);
@@ -150,7 +163,31 @@ export default {
       window.open(link);
     };
 
-    return { filters, sportEvents, handleClick: goToSportEventPage, categories, leagues, countries, loading };
+    const loadAllSportEvents = () => {
+      sportEvents.value = originalSportEvents.value;
+    }
+
+    const filterDateRange = () => {
+      const start = dateRange.value[0].valueOf();
+      const end = setToEndOfDay();
+      sportEvents.value = originalSportEvents.value.filter((se) => {
+        let convertedEventDate = new Date(se.eventDate).valueOf();
+        if (!end) {
+          return convertedEventDate >= start
+        }
+        else {
+          return convertedEventDate >= start && convertedEventDate <= end
+        }
+      });
+    }
+
+    const setToEndOfDay = () => {
+      if (dateRange.value[1] !== null) {
+        return dateRange.value[1].setHours(23,59,59).valueOf();
+      }
+    }
+
+    return { filters, sportEvents, handleClick: goToSportEventPage, filterDateRange, loadAllSportEvents, dateRange, categories, leagues, countries, loading };
   }
 }
 </script>

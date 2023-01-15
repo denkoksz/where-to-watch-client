@@ -147,13 +147,10 @@ export default class SportEventsService {
             body: JSON.stringify(sportEvent)
         }).then(async (response) => {
             if (response.ok) {
-                console.log('ok');
                 return;
             }
             error = await response.json();
-            throw new Error(error.message);
-        }).catch(() => {
-            throw new Error(error.message);
+            throw Error(error.message);
         });
     }
 
